@@ -1,0 +1,151 @@
+<?php
+session_start();
+
+// Authentication check
+if (!isset($_SESSION['username'])) {
+    echo "<script>alert('Web Master Says : : Login First :-( !!!')</script>";
+    echo "<meta http-equiv='refresh' content='2;url=../index-1.php'>";
+    exit();
+} elseif (!isset($_SESSION['status'])) {
+    echo "<script>alert('INTRUDER!!!: :')</script>";
+    echo "<meta http-equiv='refresh' content='2;url=../index-1.php'>";
+    exit();
+} else {
+    $admin = $_SESSION['username'];
+}
+
+include('includes/connect-db.php');
+
+// Fetch subcategories joined with main menu
+$query = "SELECT sub_menu.id, sub_menu.smenu_name, sub_menu.smenu_link, main_menu.mmenu_id, main_menu.mmenu_name
+          FROM sub_menu 
+          JOIN main_menu ON sub_menu.mmenu_id = main_menu.mmenu_id
+          ORDER BY sub_menu.id ASC";
+
+$result = mysqli_query($connection, $query);
+
+if (!$result) {
+    die("Query failed: " . mysqli_error($connection));
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>View Sub Category Records</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- AdminLTE + Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" />
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+
+ <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <!-- Sidebar toggle -->
+        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="adminhome.php" class="nav-link">Dashboard</a>
+      </li>
+    </ul>
+
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a href="logout.php" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Sidebar -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a href="#" class="brand-link text-center">
+      <span class="brand-text font-weight-light">Destiny Company</span>
+    </a>
+    <div class="sidebar">
+      <?php include("adminmenu.php"); ?>
+    </div>
+  </aside>
+
+  <!-- Content Wrapper -->
+  <div class="content-wrapper pt-4">
+    <section class="content">
+      <div class="container-fluid">
+
+        <h3 class="text-center mb-4">View Sub Category Records</h3>
+
+        <p class="text-center">
+          Hi, <strong><?= htmlspecialchars($admin) ?></strong>. Good To See You Working! || 
+          <!-- <a href="logout.php">Logout</a> -->
+        </p>
+
+        <div class="mb-3 text-center">
+          <a href="viewsubcat-paginated.php?page=1" class="btn btn-secondary btn-sm me-2">View Paginated</a>
+          <a href="newsubcat.php" class="btn btn-success btn-sm">Enter New Sub Category</a>
+        </div>
+
+        <div class="card">
+          <div class="card-body table-responsive p-0">
+            <table class="table table-bordered table-striped text-center align-middle mb-0">
+              <thead class="table-dark">
+                <tr>
+                  <th>ID</th>
+                  <th>Main Menu ID</th>
+                  <th>Main Menu Name</th>
+                  <th>Sub Menu Name</th>
+                  <th>Sub Menu Link</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php while ($row = mysqli_fetch_assoc($result)) : ?>
+                  <tr>
+                    <td><?= $row['id'] ?></td>
+                    <td><?= $row['mmenu_id'] ?></td>
+                    <td><?= htmlspecialchars($row['mmenu_name']) ?></td>
+                    <td><?= htmlspecialchars($row['smenu_name']) ?></td>
+                    <td><?= htmlspecialchars($row['smenu_link']) ?></td>
+                    <td>
+                      <a href="editsubcat.php?id=<?= $row['id'] ?>" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit"></i> Edit
+                      </a>
+                    </td>
+                    <td>
+                      <a href="deletesubcat.php?paginated=no&id=<?= $row['id'] ?>" 
+                         class="btn btn-danger btn-sm"
+                         onclick="return confirm('Are you sure you want to delete this sub category?');">
+                        <i class="fas fa-trash-alt"></i> Delete
+                      </a>
+                    </td>
+                  </tr>
+                <?php endwhile; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer class="main-footer text-center">
+    <strong>&copy; <?= date("Y") ?> Web Master Area.</strong> All rights reserved.
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+</body>
+</html>
+
+<?php mysqli_close($connection); ?>

@@ -1,0 +1,42 @@
+/* a:hover {
+	color: red
+}
+
+a:link {
+	text-decoration: none
+}
+
+a:visited {
+	color: navy
+}
+
+a:visited:hover {
+	color: red
+} */
+
+
+/* 🌸 Page background - pastel */
+body {
+    background-color: #fef6e4; /* pastel peach */
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* 🔗 Link styles */
+a:link {
+    color: #4682B4; /* Pastel blue */
+    text-decoration: none;
+}
+
+a:visited {
+    color: #6a5acd; /* Soft purple */
+}
+
+a:hover,
+a:visited:hover {
+    color: #e63946; /* Pastel red for hover */
+    text-decoration: underline;
+}
